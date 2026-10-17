@@ -1,0 +1,201 @@
+{
+  "name": "Apify tiktok-top-ads-scraper (scheduled)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1
+              ],
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "id": "fb7b5647-3956-4427-960b-712b43922b01",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.apify.com/v2/acts/lagenuina_agency~tiktok-top-ads-scraper/run-sync-get-dataset-items",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"countryCode\": \"US\",\n  \"period\": \"7\",\n  \"orderBy\": \"ctr\",\n  \"maxItems\": 100,\n  \"extractDetails\": true\n}",
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "id": "0e4bacfd-996b-45f4-82e9-48860773351c",
+      "name": "Run Apify actor",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        0
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "",
+          "name": "Apify API token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3a619e1b-cb0f-4619-bbd0-d2d9f1761386",
+              "name": "adId",
+              "value": "={{ $json.adId }}",
+              "type": "string"
+            },
+            {
+              "id": "e3f6c240-3b44-4960-9b8e-d0523a0be587",
+              "name": "adTitle",
+              "value": "={{ $json.adTitle }}",
+              "type": "string"
+            },
+            {
+              "id": "da483cdb-4736-4c19-b0d1-a2dc693bf34f",
+              "name": "brandName",
+              "value": "={{ $json.brandName }}",
+              "type": "string"
+            },
+            {
+              "id": "0155928b-6d48-4ded-9aae-7359e5729b26",
+              "name": "ctr",
+              "value": "={{ $json.ctr }}",
+              "type": "number"
+            },
+            {
+              "id": "04695eed-d7ee-4565-880f-0c3b8c005d52",
+              "name": "likes",
+              "value": "={{ $json.likes }}",
+              "type": "number"
+            },
+            {
+              "id": "32ce0194-03b2-4b88-a24e-ba1814566ab4",
+              "name": "industryName",
+              "value": "={{ $json.industryName }}",
+              "type": "string"
+            },
+            {
+              "id": "3dbc7162-9baf-45bc-8772-8feac4ea4b3b",
+              "name": "objectiveKey",
+              "value": "={{ $json.objectiveKey }}",
+              "type": "string"
+            },
+            {
+              "id": "3bc0c230-8e1b-40d4-94d4-5cd1da483c0b",
+              "name": "landingPageUrl",
+              "value": "={{ $json.landingPageUrl }}",
+              "type": "string"
+            },
+            {
+              "id": "3b79feec-2d4a-4e68-a45b-da3f8b61d06f",
+              "name": "videoUrl720p",
+              "value": "={{ $json.videoUrl720p }}",
+              "type": "string"
+            },
+            {
+              "id": "6c53a82f-447f-42c4-b0ff-bf1b341f9a1b",
+              "name": "detailUrl",
+              "value": "={{ $json.detailUrl }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f1a26d1e-d2bb-4c00-b365-bc4e61bcde18",
+      "name": "Keep fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        480,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "YOUR_GOOGLE_SHEET_ID"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Sheet1"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {}
+        },
+        "options": {}
+      },
+      "id": "66cb1ccd-6377-4278-b0d1-a360d8b400ba",
+      "name": "Append to Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        720,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Run Apify actor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Apify actor": {
+      "main": [
+        [
+          {
+            "node": "Keep fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Keep fields": {
+      "main": [
+        [
+          {
+            "node": "Append to Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "active": false
+}

@@ -1,0 +1,14 @@
+{
+  "name": "tiktok-top-ads-api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "TikTok Creative Center Top Ads API example in Python, JavaScript and n8n: export top-performing TikTok ads with CTR, likes, MP4 video URLs and landing pages to CSV. MCP-ready.",
+  "license": "MIT",
+  "scripts": {
+    "start": "node example.mjs"
+  },
+  "dependencies": {
+    "apify-client": "^2.25.0"
+  }
+}
